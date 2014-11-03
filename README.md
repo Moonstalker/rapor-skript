@@ -1,4 +1,4 @@
-rapor-skript
+Rapor skript
 ============
 
 rapor skript
