@@ -1,0 +1,45 @@
+command /rapor:
+	trigger:
+		send "<gray>Hile kullanimindan rapor etmek icin /raporla <oyuncu_ismi> <sebeb> yazın." to player
+
+
+command /raporla <player> <text>:
+	trigger:
+		if {raporetme.%arg 1%} is not set:
+			set {raporetme.%arg 1%} to 1
+			set {%arg 1%.raporetmenedeni} to "%arg 2%"
+			send "<yellow>%player% %arg 1% adlı oyuncuyu %arg 2% sebebiyle rapor etti." to players
+			send "<light green>%arg 1% adlı oyuncu şuan 1/10 oya sahip. Oy vermek için /rapor_oy_ver %arg 1% yazin." to players
+			send "<light green>%arg 1% adlı oyuncunun oylanma suresinin bitmesine 120 saniye kaldi." to players
+			wait 120 seconds
+			if {raporetme.%arg 1%} is smaller than 10:
+				delete {raporetme.%arg 1%}
+				delete {raporetmenedeni.%arg 1%}
+				delete {raporetmeoyver2.%arg 1%}
+#				delete {raporetmeoyver2.%arg 1%.*}
+#				delete {raporetmeoyver2.%arg 1%.::*}
+#				delete {raporetmeoyver2.%arg 1%::*}
+				send "<green>%arg 1% adlı oyuncunun oylanma süresi bitti." to players
+		else:
+			send "<gray>%arg 1% adlı oyuncu zaten rapor edilmiş durumda." to player
+
+command /rapor_oy_ver <player>:
+	trigger:
+		if {raporetme.%arg 1%} is 10:
+			execute console command "/ban %arg 1% raporlanıp 10 oy alarak %{%arg 1%.raporetmenedeni}% sebebinden banlandı(nız)."
+			send "<yellow>%arg 1% raporlanip 10 oy alarak %{%arg 1%.raporetmenedeni}% sebebinden banlandı." to players
+			delete {raporetmeoyver.%arg 1%}
+			delete {raporetme.%arg 1%}
+#			delete {raporetmeoyver.%arg 1%.::*}
+#			delete {raporetmeoyver.%arg 1%::*}
+		if {raporetme.%arg 1%} is smaller than 10:
+			if {raporetme.%arg 1%} is bigger than 0:
+				if {raporetmeoyver2.%arg 1%.%player%} is not set:
+					set {raporetmeoyver2.%arg 1%.%player%} to 1 
+					add 1 to {raporetme.%arg 1%}
+					send "<yellow>%player% , %arg 1% in raporuna oy verdi. Oy verilen kişinin sebebi: %{%arg 1%.raporetmenedeni}%" to players
+					send "<light green>%arg 1% adlı oyuncu şuan %{raporetme.%arg 1%}%/10 oya sahip. Oy vermek için /rapor_oy_ver %arg 1% yazın." to players
+					wait 120 seconds
+					delete {raporetmeoyver2.%arg 1%.%player%}
+				else:
+					send "<gray>Bu rapora zaten oy vermişsiniz." to player
